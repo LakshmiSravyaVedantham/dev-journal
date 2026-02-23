@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dev-journal"
+version = "0.1.0"
+description = "Auto-generate your work log from terminal activity"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "sravyalu" }]
+requires-python = ">=3.9"
+keywords = ["developer-tools", "productivity", "cli", "git", "standup", "journal"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+    "toml>=0.10",
+    "python-dateutil>=2.8",
+    "pyperclip>=1.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "isort>=5.12",
+    "flake8>=6.0",
+]
+
+[project.scripts]
+dev-journal = "dev_journal.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sravyalu/dev-journal"
+Repository = "https://github.com/sravyalu/dev-journal"
+Issues = "https://github.com/sravyalu/dev-journal/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 120
+target-version = ["py39"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=dev_journal --cov-report=term-missing -v"
+
+[tool.coverage.run]
+source = ["dev_journal"]
+omit = ["tests/*"]
