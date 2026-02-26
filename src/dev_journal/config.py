@@ -81,16 +81,35 @@ DEFAULT_CONFIG: Dict[str, Any] = {
 
 
 class Config:
-    """Manages dev-journal configuration stored in ~/.dev-journal/config.toml."""
+    """Manages dev-journal configuration stored in ~/.dev-journal/ by default.
 
-    def __init__(self, config_dir: Optional[Path] = None):
-        if config_dir is None:
-            self.config_dir = Path.home() / ".dev-journal"
-        else:
+    Directory resolution order (first set wins):
+      1. DEV_JOURNAL_CONFIG / DEV_JOURNAL_DATA   (explicit overrides)
+      2. $XDG_CONFIG_HOME/dev-journal/           / $XDG_DATA_HOME/dev-journal/
+      3. ~/.dev-journal/                         (default)
+    """
+
+    def __init__(self, config_dir: Optional[Path] = None, data_dir: Optional[Path] = None):
+        if config_dir is not None:
             self.config_dir = Path(config_dir)
+        elif "DEV_JOURNAL_CONFIG" in os.environ:
+            self.config_dir = Path(os.environ["DEV_JOURNAL_CONFIG"])
+        elif "XDG_CONFIG_HOME" in os.environ:
+            self.config_dir = Path(os.environ["XDG_CONFIG_HOME"]) / "dev-journal"
+        else:
+            self.config_dir = Path.home() / ".dev-journal"
+
+        if data_dir is not None:
+            self.data_dir = Path(data_dir)
+        elif "DEV_JOURNAL_DATA" in os.environ:
+            self.data_dir = Path(os.environ["DEV_JOURNAL_DATA"])
+        elif "XDG_DATA_HOME" in os.environ:
+            self.data_dir = Path(os.environ["XDG_DATA_HOME"]) / "dev-journal"
+        else:
+            self.data_dir = self.config_dir
 
         self.config_file = self.config_dir / "config.toml"
-        self.db_path = self.config_dir / "journal.db"
+        self.db_path = self.data_dir / "journal.db"
         self._data: Dict[str, Any] = {}
         self._load()
 
@@ -111,8 +130,9 @@ class Config:
             toml.dump(self._data, fh)
 
     def initialize(self) -> None:
-        """Create config directory and write default config if it does not exist."""
+        """Create config and data directories, write default config if it does not exist."""
         self.config_dir.mkdir(parents=True, exist_ok=True)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
         if not self.config_file.exists():
             self.save()
             logger.info("Initialized config at %s", self.config_file)
