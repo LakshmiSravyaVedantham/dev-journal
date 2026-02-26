@@ -206,7 +206,18 @@ dev-journal timeline [--days N] [--repo NAME] [--type TYPE]
 
 ## Configuration
 
-dev-journal stores its configuration at `~/.dev-journal/config.toml`:
+dev-journal stores its configuration at `~/.dev-journal/config.toml` by default.
+
+Directory resolution order (first set wins):
+
+| Env var | Affects | Example |
+|---|---|---|
+| `DEV_JOURNAL_CONFIG` | config directory | `export DEV_JOURNAL_CONFIG=~/.config/dev-journal` |
+| `DEV_JOURNAL_DATA` | data/database directory | `export DEV_JOURNAL_DATA=~/.local/share/dev-journal` |
+| `XDG_CONFIG_HOME` | config directory | `~/.config/dev-journal/` |
+| `XDG_DATA_HOME` | data/database directory | `~/.local/share/dev-journal/` |
+
+Falls back to `~/.dev-journal/` for both when none of the above are set.
 
 ```toml
 [general]

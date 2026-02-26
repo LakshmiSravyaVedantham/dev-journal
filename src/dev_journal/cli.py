@@ -81,7 +81,7 @@ def main(ctx: click.Context, verbose: bool) -> None:
 def init(ctx: click.Context, repo: str, enable_shell_history: bool, history_path: Optional[str]) -> None:
     """Initialize dev-journal for a repository.
 
-    Creates ~/.dev-journal/ directory with config.toml and journal.db.
+    Creates config and data directories (XDG Base Directory spec by default).
     """
     from dev_journal.formatter import print_info, print_success, print_title
 
